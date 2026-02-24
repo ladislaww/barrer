@@ -124,7 +124,7 @@ export function ProductGallery({ title, images }: ProductGalleryProps) {
           >
             <Image
               src={activeImage}
-              alt={`${title} ${activeIndex + 1}`}
+              alt={`${title} ${(activeIndex ?? 0) + 1}`}
               width={1200}
               height={1600}
               style={{
