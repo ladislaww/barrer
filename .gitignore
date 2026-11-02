@@ -20,9 +20,19 @@
 # production
 /build
 
+# local database
+*.db
+*.db-journal
+
+# рабочие выгрузки и отчёты — не место в репозитории
+/outputs
+
 # misc
 .DS_Store
 *.pem
+
+# local claude settings (machine-specific paths)
+.claude/settings.local.json
 
 # debug
 npm-debug.log*

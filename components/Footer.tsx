@@ -1,4 +1,9 @@
+import Link from "next/link";
+import { contactChannels, storeInfo } from "@/lib/store-info";
+
 export function Footer() {
+  const channels = contactChannels();
+
   return (
     <footer className="page">
       <div className="divider" />
@@ -6,10 +11,21 @@ export function Footer() {
         <div>
           <div className="mono">Barrer Atelier</div>
           <p className="muted">Минималистичные силуэты. Скульптурный объем. Ночные фактуры.</p>
+          {storeInfo.legalName ? (
+            <p className="muted" style={{ fontSize: 12 }}>{storeInfo.legalName}</p>
+          ) : null}
         </div>
         <div className="mono" style={{ marginLeft: "auto" }}>
-          <div>support@barrer.example</div>
-          <div>Instagram / @barrer</div>
+          {channels.map((channel) => (
+            <div key={channel.label}>
+              <a href={channel.href} className="nav-link">{channel.value}</a>
+            </div>
+          ))}
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 12 }}>
+            <Link href="/contacts" className="nav-link">Контакты</Link>
+            <Link href="/offer" className="nav-link">Оферта</Link>
+            <Link href="/privacy" className="nav-link">Персональные данные</Link>
+          </div>
         </div>
       </div>
     </footer>

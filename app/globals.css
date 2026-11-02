@@ -177,3 +177,40 @@ label {
   text-transform: uppercase;
   color: var(--muted);
 }
+
+.checkbox-line {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+}
+
+.checkbox-line input {
+  width: auto;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: 40px 4vw 56px;
+  }
+
+  header .container {
+    flex-wrap: wrap;
+  }
+
+  header nav {
+    order: 3;
+    width: 100%;
+    margin-left: 0 !important;
+    overflow-x: auto;
+  }
+
+  .card {
+    padding: 18px;
+  }
+}

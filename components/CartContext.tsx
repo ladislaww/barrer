@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import type { Product } from "@/lib/cms/types";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import type { Product } from "@/lib/db/types";
 
 type CartItem = {
   product: Product;
@@ -24,19 +24,31 @@ const STORAGE_KEY = "barrer.cart";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const storageLoaded = useRef(false);
 
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
-    if (stored) {
+    queueMicrotask(() => {
+      const stored = window.localStorage.getItem(STORAGE_KEY);
+      storageLoaded.current = true;
+
+      if (!stored) {
+        return;
+      }
+
       try {
-        setItems(JSON.parse(stored) as CartItem[]);
+        const parsed = JSON.parse(stored);
+        setItems(Array.isArray(parsed) ? (parsed as CartItem[]) : []);
       } catch {
         setItems([]);
       }
-    }
+    });
   }, []);
 
   useEffect(() => {
+    if (!storageLoaded.current) {
+      return;
+    }
+
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 

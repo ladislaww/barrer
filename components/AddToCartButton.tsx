@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useCart } from "./CartContext";
-import type { Product } from "@/lib/cms/types";
+import type { Product } from "@/lib/db/types";
+import { useLanguage } from "./LanguageContext";
 
 export function AddToCartButton({ product }: { product: Product }) {
   const { addToCart } = useCart();
+  const { t } = useLanguage();
   const [isAdded, setIsAdded] = useState(false);
 
   useEffect(() => {
@@ -23,7 +25,7 @@ export function AddToCartButton({ product }: { product: Product }) {
         setIsAdded(true);
       }}
     >
-      {isAdded ? "✓ Добавлено" : "Добавить в корзину"}
+      {isAdded ? `✓ ${t.added}` : t.addToCart}
     </button>
   );
 }

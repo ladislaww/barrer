@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String       @id @default(cuid())
+  email             String       @unique
+  password          String
+  name              String?
+  phone             String?
+  city              String?
+  street            String?
+  house             String?
+  building          String?
+  postal            String?
+  role              String       @default("CUSTOMER")
+  offerAcceptedAt   DateTime?
+  privacyAcceptedAt DateTime?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @default(now()) @updatedAt
+  orders            Order[]
+  card              MembersCard?
+}
+
+model Product {
+  id               String            @id @default(cuid())
+  slug             String            @unique
+  title            String
+  titleEn          String?
+  price            Float
+  stock            Int               @default(0)
+  inStock          Boolean           @default(true)
+  isVisible        Boolean           @default(true)
+  description      String
+  descriptionEn    String?
+  details          String            @default("[]")
+  detailsEn        String            @default("[]")
+  images           String            @default("[]")
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  orderItems       OrderItem[]
+  discountProducts DiscountProduct[]
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  userId        String?
+  customerEmail String
+  customerPhone String
+  customerName  String?
+  city          String?
+  street        String?
+  house         String?
+  building      String?
+  postal        String?
+  comment       String?
+  total         Float
+  totalRub      Float       @default(0)
+  /// Общая сумма заказа без скидки, в рублях
+  subtotalRub   Float       @default(0)
+  /// Сумма предоставленной скидки, в рублях (subtotalRub - totalRub)
+  discountRub   Float       @default(0)
+  currency      String      @default("RUB")
+  exchangeRate  Float       @default(1)
+  displayTotal  Float       @default(0)
+  /// PAID | DELIVERED | RETURNED — см. lib/orders/status.ts
+  status        String      @default("PAID")
+  discountPct   Float       @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  items         OrderItem[]
+  user          User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model MembersCard {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  number    String   @unique
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Discount {
+  id         String            @id @default(cuid())
+  percentage Float
+  startsAt   DateTime
+  endsAt     DateTime
+  isActive   Boolean           @default(true)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  products   DiscountProduct[]
+}
+
+model DiscountProduct {
+  id         String   @id @default(cuid())
+  discountId String
+  productId  String
+  discount   Discount @relation(fields: [discountId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([discountId, productId])
+}
+
+model OrderItem {
+  id                  String  @id @default(cuid())
+  orderId             String
+  productId           String
+  quantity            Int
+  /// Цена за единицу без скидки на момент заказа
+  unitPrice           Float   @default(0)
+  /// Цена за единицу со скидкой на момент заказа
+  unitPriceDiscounted Float   @default(0)
+  /// Стоимость позиции без скидки (unitPrice * quantity)
+  lineTotal           Float   @default(0)
+  /// Стоимость позиции со скидкой (unitPriceDiscounted * quantity)
+  lineTotalDiscounted Float   @default(0)
+  order               Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product             Product @relation(fields: [productId], references: [id])
+}

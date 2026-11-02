@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Barrer Atelier
 
-## Getting Started
+Next.js storefront with a built-in admin panel, customer accounts, Prisma, SQLite, Telegram notifications, and Auth.js credentials login.
 
-First, run the development server:
+This version does not use a CMS. Products, orders, and admin users are stored in the local SQL database file `prisma/dev.db`.
+
+## Features
+
+- Product catalog and product pages
+- Cart with persistent localStorage state and image fallbacks
+- Checkout with delivery address, comment, legal consent checkboxes, and stock validation
+- Customer registration, login, profile editing, and order history
+- Admin dashboard, product CRUD, order status management
+- Product visibility toggle for hiding products from the storefront
+- RU/EN language switcher with RUB/USD display conversion
+- Telegram notification on new order
+
+## Local Setup
 
 ```bash
+npm install
+cp .env.local.example .env
+npm run db:push
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Admin:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`npm run db:seed` creates the admin account and prints a generated password once.
+Save it — it is not shown again. To choose the password yourself, set `ADMIN_EMAIL`
+and `ADMIN_PASSWORD` before seeding.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```txt
+http://localhost:3000/admin/login
+```
 
-## Learn More
+Re-running the seed never resets an existing admin password.
 
-To learn more about Next.js, take a look at the following resources:
+## Environment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Copy `.env.example` or `.env.local.example` to `.env` and fill production values:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```txt
+DATABASE_URL="file:./dev.db"
+AUTH_SECRET="generated-secret"
+NEXTAUTH_URL="https://your-domain.ru"
+TELEGRAM_BOT_TOKEN=""
+TELEGRAM_ADMIN_CHAT_ID=""
+```
 
-## Deploy on Vercel
+Do not commit real secrets.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Hosting Notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project can run on a regular Node.js hosting or VPS where the app has persistent disk storage. Keep `prisma/dev.db` on persistent storage and back it up.
+
+For serverless hosting without persistent disk, use PostgreSQL instead of SQLite.

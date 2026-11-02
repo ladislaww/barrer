@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { ProductImage } from "./ProductImage";
 
 type ProductGalleryProps = {
   title: string;
@@ -50,22 +51,20 @@ export function ProductGallery({ title, images }: ProductGalleryProps) {
   return (
     <>
       <div className="grid" style={{ gap: 16 }}>
-        {hasImages ? (
-          <button
-            type="button"
-            onClick={() => setActiveIndex(0)}
-            style={{ padding: 0, border: "none", background: "transparent", cursor: "zoom-in" }}
-            aria-label="Enlarge image"
-          >
-            <Image
-              src={images[0]}
-              alt={title}
-              width={900}
-              height={1200}
-              style={{ width: "100%", height: "auto", border: "1px solid var(--border)" }}
-            />
-          </button>
-        ) : null}
+        <button
+          type="button"
+          onClick={() => (hasImages ? setActiveIndex(0) : undefined)}
+          style={{ padding: 0, border: "none", background: "transparent", cursor: hasImages ? "zoom-in" : "default" }}
+          aria-label="Enlarge image"
+        >
+          <ProductImage
+            src={images[0]}
+            alt={title}
+            width={900}
+            height={1200}
+            style={{ width: "100%", height: "auto", border: "1px solid var(--border)" }}
+          />
+        </button>
         {images.length > 1 ? (
           <div
             style={{
@@ -104,6 +103,7 @@ export function ProductGallery({ title, images }: ProductGalleryProps) {
         <div
           role="dialog"
           aria-modal="true"
+          onClick={handleClose}
           style={{
             position: "fixed",
             inset: 0,
